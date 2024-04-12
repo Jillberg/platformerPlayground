@@ -7,6 +7,9 @@ public class PlayerMovement : MonoBehaviour
 {
     public Rigidbody2D rb;
     private bool isFacingRight = true;
+    public Animator animator;
+    BoxCollider2D playerCollider;
+
     [Header("Movement")]
     public float moveSpeed = 5f;
     float horizontalMovement;
@@ -22,6 +25,8 @@ public class PlayerMovement : MonoBehaviour
     public Vector2 groundCheckSize=new Vector2(0.5f, 0.5f);
     public LayerMask groundLayer;
     bool isGrounded;
+    bool isOnPlatForm;
+    public float droppingTime = 0.25f;
 
     [Header("WallCheck")]
     public Transform wallCheckPos;
@@ -37,13 +42,14 @@ public class PlayerMovement : MonoBehaviour
     float wallJumpTimer;
     public Vector2 wallJumpPower = new Vector2(5f, 10f);
 
-    [Header("Grabity")]
+    [Header("Gravity")]
     public float baseGravity =2f;
     public float maxFallSpeed = 18f;
     public float fallSpeedMultiplier = 2f;
 
     void Start()
     {
+        playerCollider = GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame
@@ -59,6 +65,11 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(horizontalMovement * moveSpeed, rb.velocity.y);
             Flip();
         }
+
+        animator.SetFloat("yVelocity",rb.velocity.y);
+        animator.SetFloat("magnitude", rb.velocity.magnitude);
+        animator.SetBool("isWallSliding", isWallSliding);
+        Debug.Log(rb.velocity.magnitude);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -74,12 +85,14 @@ public class PlayerMovement : MonoBehaviour
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpPower);
                 jumpRemaining--;
+                animator.SetTrigger("jump");
             }
             else if (context.canceled)
             {
                 //light tap of the jumping buttons
                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
                 jumpRemaining--;
+                animator.SetTrigger("jump");
 
             }
         }
@@ -88,7 +101,8 @@ public class PlayerMovement : MonoBehaviour
         {
             isWallJumping = true;
             rb.velocity=new Vector2(wallJumpDirection* wallJumpPower.x,wallJumpPower.y); //Jump away from wall
-            wallJumpTimer = 0f;
+            wallJumpTimer = 0;
+            animator.SetTrigger("jump");
             if (transform.localScale.x != wallJumpDirection)
             {
                 isFacingRight = !isFacingRight;
@@ -100,6 +114,40 @@ public class PlayerMovement : MonoBehaviour
         }
         
         
+    }
+
+    public void Drop(InputAction.CallbackContext context)
+    {
+        if (context.performed && isGrounded && isOnPlatForm&&playerCollider.enabled)
+        {
+            StartCoroutine(DisablePlayerCollider(droppingTime));
+        }
+
+    }
+
+    private IEnumerator DisablePlayerCollider(float disableTime)
+    {
+        playerCollider.enabled = false;
+        yield return new WaitForSeconds(disableTime);
+        playerCollider.enabled = true;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Platform"))
+        {
+            isOnPlatForm = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Platform"))
+        {
+            isOnPlatForm = false;
+        }
+
+
     }
 
     private void GroundCheck()
