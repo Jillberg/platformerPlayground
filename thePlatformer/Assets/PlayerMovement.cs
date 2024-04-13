@@ -251,6 +251,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isWallSliding=true;
             rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -wallSlideSpeed));
+            canDash = true;
         }
         else
         {
