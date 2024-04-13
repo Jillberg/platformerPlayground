@@ -4527,7 +4527,7 @@ MonoBehaviour:
   moveSpeed: 10
   dashSpeed: 30
   dashDuration: 0.15
-  dashCooldown: 0.1
+  dashCooldown: 0.5
   jumpPower: 10
   maxJumps: 2
   groundCheckPos: {fileID: 162585243}
