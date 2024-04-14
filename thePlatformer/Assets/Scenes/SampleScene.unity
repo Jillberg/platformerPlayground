@@ -1311,7 +1311,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.11014597, g: 0.118674114, b: 0.13207549, a: 0}
+  m_BackGroundColor: {r: 0.68956214, g: 0.79622644, b: 0.7439332, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -4527,7 +4527,7 @@ MonoBehaviour:
   moveSpeed: 10
   dashSpeed: 30
   dashDuration: 0.15
-  dashCooldown: 0.5
+  dashCooldown: 0.2
   jumpPower: 10
   maxJumps: 2
   groundCheckPos: {fileID: 162585243}
